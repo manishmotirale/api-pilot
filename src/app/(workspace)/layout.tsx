@@ -15,7 +15,6 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full flex-col overflow-hidden bg-[#05070b] text-zinc-100">
-        
         <header className="relative z-50 h-16 shrink-0 border-b border-white/[0.07] bg-[#080b11]/95 backdrop-blur-xl">
           <Header user={user!} workspace={workspace.workspace!} />
         </header>
