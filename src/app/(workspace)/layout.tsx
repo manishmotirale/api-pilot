@@ -4,7 +4,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { currentUser } from "@/modules/authentication/actions";
 import Header from "@/modules/layout/components/header";
 import { initializeWorkspace } from "@/modules/workspace/actions";
-import TabbedLeftPanel from "@/modules/workspace/components/tabbed-left-panel";
+// import TabbedLeftPanel from "@/modules/workspace/components/tabbed-left-panel";
 
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
   const [user, workspace] = await Promise.all([
@@ -37,7 +37,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-blue-500/[0.03] via-transparent to-transparent" />
 
             <div className="relative flex h-full flex-col items-center">
-              <TabbedLeftPanel />
+              {/* <TabbedLeftPanel /> */}
             </div>
           </aside>
 

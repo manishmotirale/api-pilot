@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/resizable";
 import { Loader2 } from "lucide-react";
 import { useWorkspaceStore } from "@/modules/layout/store";
-import RequestPlayground from "@/modules/request/components/request-playground";
+import PlaygroundPage from "@/modules/request/components/request-playground";
 import TabbedSidebar from "@/modules/workspace/components/sidebar";
 import { useGetWorkspace } from "@/modules/workspace/hooks/workspace";
 
@@ -69,7 +69,7 @@ const Page = () => {
     <ResizablePanelGroup direction="horizontal" className="h-full w-full">
       {/* Request Playground */}
       <ResizablePanel defaultSize={65} minSize={40} className="min-w-0">
-        <RequestPlayground />
+        <PlaygroundPage />
       </ResizablePanel>
 
       {/* Resize Handle */}
