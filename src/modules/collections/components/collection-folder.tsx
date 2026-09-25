@@ -26,11 +26,10 @@ import {
 
 import EditCollectionModal from "./edit-collection-model";
 import DeleteCollectionModal from "./delete-collection-model";
-import AddRequestCollectionModal from "./add-request-modal";
-import { useGetAllRequestFromCollection } from "@/modules/request/hooks/request";
+import { useGetAllRequestsFromCollection } from "@/modules/request/hooks/request";
 import { useRequestPlaygroundStore } from "@/modules/request/store/useRequestStore";
-
-import { REST_METHOD } from "@/prisma/generated/client";
+import { REST_METHOD } from "../../../../prisma/generated/enums";
+import SaveRequestToCollectionModal from "./add-request-modal";
 
 interface Props {
   collection: {
@@ -51,7 +50,7 @@ const CollectionFolder = ({ collection }: Props) => {
     data: requestData,
     isPending,
     isError,
-  } = useGetAllRequestFromCollection(collection.id);
+  } = useGetAllRequestsFromCollection(collection.id);
 
   const { openRequestTab } = useRequestPlaygroundStore();
 
@@ -71,7 +70,6 @@ const CollectionFolder = ({ collection }: Props) => {
     <>
       <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
         <div className="w-full">
-          
           // Collection Header
           <div
             className="
@@ -83,7 +81,6 @@ const CollectionFolder = ({ collection }: Props) => {
             "
           >
             {/* Collection Name */}
-
             <CollapsibleTrigger
               className="
                 flex min-w-0 flex-1
@@ -93,7 +90,6 @@ const CollectionFolder = ({ collection }: Props) => {
               "
             >
               {/* Expand / Collapse */}
-
               <div className="flex size-4 shrink-0 items-center justify-center">
                 {hasRequests ? (
                   isOpen ? (
@@ -105,7 +101,6 @@ const CollectionFolder = ({ collection }: Props) => {
               </div>
 
               {/* Folder */}
-
               <Folder
                 className="
                   size-4 shrink-0
@@ -116,7 +111,6 @@ const CollectionFolder = ({ collection }: Props) => {
               />
 
               {/* Name */}
-
               <span
                 className="
                   min-w-0 flex-1
@@ -131,7 +125,6 @@ const CollectionFolder = ({ collection }: Props) => {
               </span>
 
               {/* Request Count */}
-
               {hasRequests && (
                 <span
                   className="
@@ -151,7 +144,6 @@ const CollectionFolder = ({ collection }: Props) => {
             </CollapsibleTrigger>
 
             {/* Actions */}
-
             <div
               className="
                 ml-2
@@ -163,7 +155,6 @@ const CollectionFolder = ({ collection }: Props) => {
               "
             >
               {/* Add Request */}
-
               <button
                 type="button"
                 title="Add request"
@@ -182,7 +173,6 @@ const CollectionFolder = ({ collection }: Props) => {
               </button>
 
               {/* More */}
-
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
@@ -208,7 +198,6 @@ const CollectionFolder = ({ collection }: Props) => {
                   className="w-44 border-zinc-800 bg-zinc-950"
                 >
                   {/* Add Request */}
-
                   <DropdownMenuItem
                     onClick={() => setIsAddRequestOpen(true)}
                     className="cursor-pointer"
@@ -223,7 +212,6 @@ const CollectionFolder = ({ collection }: Props) => {
                   </DropdownMenuItem>
 
                   {/* Edit */}
-
                   <DropdownMenuItem
                     onClick={() => setIsEditOpen(true)}
                     className="cursor-pointer"
@@ -238,7 +226,6 @@ const CollectionFolder = ({ collection }: Props) => {
                   </DropdownMenuItem>
 
                   {/* Delete */}
-
                   <DropdownMenuItem
                     onClick={() => setIsDeleteOpen(true)}
                     className="
@@ -260,7 +247,7 @@ const CollectionFolder = ({ collection }: Props) => {
               </DropdownMenu>
             </div>
           </div>
-
+          
           // Requests
           <CollapsibleContent className="w-full">
             {isPending ? (
@@ -317,7 +304,6 @@ const CollectionFolder = ({ collection }: Props) => {
                         "
                       >
                         {/* Method */}
-
                         <span
                           className={`
                             min-w-[42px]
@@ -335,7 +321,6 @@ const CollectionFolder = ({ collection }: Props) => {
                         </span>
 
                         {/* Request Info */}
-
                         <div className="min-w-0 flex-1">
                           <p
                             className="
@@ -427,7 +412,6 @@ const CollectionFolder = ({ collection }: Props) => {
           </CollapsibleContent>
         </div>
       </Collapsible>
-
       // Edit Collection
       <EditCollectionModal
         isModalOpen={isEditOpen}
@@ -435,16 +419,14 @@ const CollectionFolder = ({ collection }: Props) => {
         collectionId={collection.id}
         initialName={collection.name}
       />
-
       // Delete Collection
       <DeleteCollectionModal
         isModalOpen={isDeleteOpen}
         setIsModalOpen={setIsDeleteOpen}
         collectionId={collection.id}
       />
-
       // Add Request
-      <AddRequestCollectionModal
+      <SaveRequestToCollectionModal
         isModalOpen={isAddRequestOpen}
         setIsModalOpen={setIsAddRequestOpen}
         collectionId={collection.id}
