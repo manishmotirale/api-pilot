@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// import { useGenerateJsonBody } from "@/modules/ai/hooks/ai-suggestion";
+import { useGenerateJsonBody } from "@/modules/ai/hooks/ai-suggestion";
 import { useWorkspaceStore } from "@/modules/layout/store";
 import { useRequestPlaygroundStore } from "../store/useRequestStore";
 
@@ -82,7 +82,7 @@ const BodyEditor: React.FC<BodyEditorProps> = ({
 
   const { tabs, activeTabId } = useRequestPlaygroundStore();
 
-  // const { mutateAsync, isPending } = useGenerateJsonBody();
+  const { mutateAsync, isPending } = useGenerateJsonBody();
 
   // Form
   const form = useForm<BodyEditorFormData>({
