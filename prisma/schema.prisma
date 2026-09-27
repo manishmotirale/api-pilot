@@ -218,9 +218,7 @@ model RequestRun {
   createdAt DateTime @default(now())
 }
 
-//
 // ─── ENVIRONMENTS ───────────────────────────────────────────────────────
-//
 
 model Environment {
   id     String @id @default(cuid())

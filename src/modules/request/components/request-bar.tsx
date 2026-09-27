@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { Loader2, Send } from "lucide-react";
-// import { useRunRequest } from "../hooks/request";
+import { useRunRequest } from "../hooks/request";
 import { toast } from "sonner";
 import { REST_METHOD } from "../../../../prisma/generated/enums";
 
@@ -26,7 +26,7 @@ interface Props {
 }
 
 const RequestBar = ({ tab, updateTab }: Props) => {
-  // const { mutateAsync, isPending } = useRunRequest(tab?.requestId!);
+  const { mutateAsync, isPending } = useRunRequest(tab?.requestId!);
 
   const requestColorMap: Record<REST_METHOD, string> = {
     [REST_METHOD.GET]: "text-green-500",
@@ -44,7 +44,6 @@ const RequestBar = ({ tab, updateTab }: Props) => {
 
     try {
       await mutateAsync();
-
       toast.success("Request sent successfully!");
     } catch (error) {
       console.error("Failed to send request:", error);
@@ -117,7 +116,7 @@ const RequestBar = ({ tab, updateTab }: Props) => {
         // disabled={isPending || !tab.url?.trim()}
         className="ml-2 bg-indigo-500 font-bold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {/* {isPending ? (
+        {isPending ? (
           <>
             <Loader2 className="mr-2 size-4 animate-spin" />
             Sending...
@@ -127,7 +126,7 @@ const RequestBar = ({ tab, updateTab }: Props) => {
             <Send className="mr-2 size-4" />
             Send
           </>
-        )} */}
+        )}
       </Button>
     </div>
   );

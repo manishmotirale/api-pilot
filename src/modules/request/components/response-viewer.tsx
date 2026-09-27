@@ -55,9 +55,7 @@ interface Props {
 const ResponseViewer = ({ responseData }: Props) => {
   const [activeTab, setActiveTab] = useState("json");
 
-  // ============================================
   // Status Color
-  // ============================================
   const getStatusColor = (status?: number): string => {
     const value = typeof status === "number" ? status : 0;
 
@@ -80,9 +78,7 @@ const ResponseViewer = ({ responseData }: Props) => {
     return "text-zinc-400";
   };
 
-  // ============================================
   // Format Response Size
-  // ============================================
   const formatBytes = (bytes?: number): string => {
     if (!bytes || bytes === 0) {
       return "0 B";
@@ -96,9 +92,7 @@ const ResponseViewer = ({ responseData }: Props) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  // ============================================
   // Copy To Clipboard
-  // ============================================
   const copyToClipboard = async (text: string) => {
     if (!navigator?.clipboard) {
       return;
@@ -111,9 +105,7 @@ const ResponseViewer = ({ responseData }: Props) => {
     }
   };
 
-  // ============================================
   // Parse Response Body
-  // ============================================
   let responseBody: unknown = {};
   let formattedJsonString = "";
 
@@ -138,9 +130,7 @@ const ResponseViewer = ({ responseData }: Props) => {
         : JSON.stringify(responseBody, null, 2);
   }
 
-  // ============================================
   // Response Information
-  // ============================================
   const status = responseData.result?.status ?? responseData.requestRun?.status;
 
   const statusText =
@@ -158,9 +148,7 @@ const ResponseViewer = ({ responseData }: Props) => {
   return (
     <div className="w-full bg-zinc-950 p-6 text-white">
       <div className="mx-auto w-full">
-        {/* ============================================
-            Response Status Header
-        ============================================ */}
+        // Response Status Header
         <Card className="mb-6 border-zinc-800 bg-zinc-900">
           <CardHeader className="pb-3">
             <div className="flex flex-wrap items-center justify-between gap-4">
@@ -237,10 +225,7 @@ const ResponseViewer = ({ responseData }: Props) => {
             </div>
           </CardHeader>
         </Card>
-
-        {/* ============================================
-            Response Card
-        ============================================ */}
+        {/* Response Card */}
         <Card className="border-zinc-800 bg-zinc-900">
           <CardHeader className="pb-3">
             <CardTitle className="text-zinc-200">Response Body</CardTitle>
@@ -252,9 +237,7 @@ const ResponseViewer = ({ responseData }: Props) => {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              {/* ============================================
-                  Tabs
-              ============================================ */}
+              {/* Tabs */}
               <div className="border-b border-zinc-800 px-6">
                 <TabsList className="h-auto bg-transparent p-0">
                   {/* JSON */}
@@ -300,10 +283,7 @@ const ResponseViewer = ({ responseData }: Props) => {
                   </TabsTrigger>
                 </TabsList>
               </div>
-
-              {/* ============================================
-                  JSON TAB
-              ============================================ */}
+              {/* JSON TAB */}
               <TabsContent value="json" className="mt-0">
                 <div className="relative">
                   {/* Copy Button */}
@@ -353,10 +333,7 @@ const ResponseViewer = ({ responseData }: Props) => {
                   </div>
                 </div>
               </TabsContent>
-
-              {/* ============================================
-                  RAW TAB
-              ============================================ */}
+              {/* RAW TAB */}
               <TabsContent value="raw" className="mt-0">
                 <div className="relative">
                   {/* Copy Button */}
@@ -406,10 +383,7 @@ const ResponseViewer = ({ responseData }: Props) => {
                   </div>
                 </div>
               </TabsContent>
-
-              {/* ============================================
-                  HEADERS TAB
-              ============================================ */}
+              {/* HEADERS TAB */}
               <TabsContent value="headers" className="mt-0">
                 <ScrollArea className="h-96">
                   <div className="p-6">
@@ -452,10 +426,7 @@ const ResponseViewer = ({ responseData }: Props) => {
                   </div>
                 </ScrollArea>
               </TabsContent>
-
-              {/* ============================================
-                  TEST RESULTS TAB
-              ============================================ */}
+              // TEST RESULTS TAB
               <TabsContent value="test" className="mt-0">
                 <div className="p-6">
                   <div className="mb-4 flex items-center gap-2">

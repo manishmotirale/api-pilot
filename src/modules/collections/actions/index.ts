@@ -18,13 +18,13 @@ export const createCollection = async (workspaceId: string, name: string) => {
 
 
 export const getCollections = async (workspaceId: string) => {
-    const collection = await db.collection.findMany({
+    const collections = await db.collection.findMany({  
         where: {
             workspaceId,
         },
     });
 
-    return collection;
+    return collections;
 }
 
 export const deleteCollection = async (collectionId: string) => {

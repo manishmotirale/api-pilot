@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addRequestToCollection, type Request, getAllRequestsFromCollection, saveRequest } from "../action";
+import { addRequestToCollection, type Request, getAllRequestFromCollection, saveRequest, run } from "../action";
+import { useRequestPlaygroundStore } from "../store/useRequestStore";
 
 export function useAddRequestToCollection(collectionId: string) {
     const queryClient = useQueryClient();
@@ -18,7 +19,7 @@ export function useGetAllRequestsFromCollection(collectionId: string) {
     return useQuery({
         queryKey: ['requests', collectionId],
         queryFn: async () => {
-            getAllRequestsFromCollection(collectionId)
+            return getAllRequestFromCollection(collectionId)
         }
     })
 }
@@ -36,3 +37,19 @@ export function useSaveRequest(id: string) {
         }
     })
 }
+
+export function useRunRequest(requestId: string) {
+    const queryClient = useQueryClient();
+    const { setResponseViewerData } = useRequestPlaygroundStore();
+
+    return useMutation({
+        mutationFn: async () => await run(requestId),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['requests'] })
+            // @ts-ignore
+            setResponseViewerData(data)
+
+        }
+    })
+}
+
