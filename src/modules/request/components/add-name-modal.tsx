@@ -3,23 +3,21 @@
 import Modal from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-// import { useSuggestRequestName } from "@/modules/ai/hooks/ai-suggestion";
-import { useRequestPlaygroundStore } from "../store/useRequestStore";
-
+import { useSuggestRequestName } from "@/modules/ai/hooks/ai-suggestion";
 import { Sparkles } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
-interface Suggestion {
-  name: string;
-  reasoning: string;
-}
+import { useRequestPlaygroundStore } from "../store/useRequestStore";
 
 interface AddNameModalProps {
   isModalOpen: boolean;
   setIsModalOpen: (open: boolean) => void;
   tabId: string;
+}
+
+interface Suggestion {
+  name: string;
+  reasoning: string;
 }
 
 const AddNameModal = ({
@@ -29,26 +27,37 @@ const AddNameModal = ({
 }: AddNameModalProps) => {
   const { updateTab, tabs, markUnsaved } = useRequestPlaygroundStore();
 
-//   const { mutateAsync, isPending } = useSuggestRequestName();
+  const { mutateAsync, isPending } = useSuggestRequestName();
 
-  const tab = tabs.find((tab) => tab.id === tabId);
+  const tab = tabs.find((t) => t.id === tabId);
 
   const [name, setName] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
 
-  // Load current request name
+  // Update the input whenever the selected tab changes
   useEffect(() => {
     if (tab) {
       setName(tab.title || "");
     }
-  }, [tab, tabId]);
+  }, [tab]);
 
-  // Save Request Name
+  // Clear suggestions whenever the modal opens for a different request
+  useEffect(() => {
+    if (isModalOpen) {
+      setSuggestions([]);
+    }
+  }, [isModalOpen, tabId]);
+
   const handleSubmit = async () => {
     const trimmedName = name.trim();
 
     if (!trimmedName) {
       toast.error("Request name cannot be empty");
+      return;
+    }
+
+    if (!tab) {
+      toast.error("Request not found");
       return;
     }
 
@@ -70,7 +79,6 @@ const AddNameModal = ({
     }
   };
 
-  // Generate AI Suggestions
   const handleGenerateSuggestions = async () => {
     if (!tab) {
       toast.error("Request not found");
@@ -89,31 +97,30 @@ const AddNameModal = ({
         description: `Request in collection ${tab.collectionId || ""}`,
       });
 
-      if (result?.suggestions && result.suggestions.length > 0) {
-        setSuggestions(result.suggestions);
-
-        // Automatically select first suggestion
-        setName(result.suggestions[0].name);
-
-        toast.success("Generated name suggestions");
-      } else {
-        toast.error("No name suggestions generated");
+      if (!result.suggestions || result.suggestions.length === 0) {
+        toast.error("No name suggestions were generated");
+        return;
       }
+
+      setSuggestions(result.suggestions);
+
+      // Automatically select the first suggestion
+      setName(result.suggestions[0].name);
+
+      toast.success("Generated name suggestions");
     } catch (error) {
       console.error("Failed to generate name suggestions:", error);
 
-      toast.error("Failed to generate name suggestions");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to generate name suggestions",
+      );
     }
   };
 
-// Close Modal
-  const handleClose = () => {
-    if (isPending) {
-      return;
-    }
-
-    setSuggestions([]);
-    setIsModalOpen(false);
+  const handleSuggestionClick = (suggestion: Suggestion) => {
+    setName(suggestion.name);
   };
 
   return (
@@ -121,38 +128,34 @@ const AddNameModal = ({
       title="Rename Request"
       description="Give your request a name"
       isOpen={isModalOpen}
-      onClose={handleClose}
+      onClose={() => setIsModalOpen(false)}
       onSubmit={handleSubmit}
       submitText="Save"
       submitVariant="default"
     >
       <div className="flex flex-col gap-4">
-        {/* Request Name + AI Button */}
-        <div className="flex items-center gap-2">
+        {/* Request Name Input */}
+        <div className="flex items-center justify-center gap-2">
           <Input
             className="w-full border-zinc-700 bg-zinc-900 p-2 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500"
             placeholder="Request Name..."
             value={name}
             onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleSubmit();
-              }
-            }}
+            disabled={isPending}
           />
 
+          {/* AI Suggest Button */}
           <Button
             type="button"
             variant="outline"
             size="icon"
             onClick={handleGenerateSuggestions}
             disabled={isPending || !tab}
-            title="Generate AI suggestions"
+            title="Generate AI name suggestions"
           >
             <Sparkles
-              className={`size-5 text-indigo-500 ${
-                isPending ? "animate-pulse" : ""
+              className={`h-5 w-5 ${
+                isPending ? "animate-pulse text-zinc-500" : "text-indigo-500"
               }`}
             />
           </Button>
@@ -161,22 +164,22 @@ const AddNameModal = ({
         {/* AI Suggestions */}
         {suggestions.length > 0 && (
           <div className="flex flex-col gap-2">
-            <div className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+            <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
               AI Suggestions
-            </div>
+            </p>
 
             {suggestions.map((suggestion, index) => (
               <button
-                key={`${suggestion.name}-${index}`}
                 type="button"
-                className="flex w-full items-center justify-between gap-3 rounded-md border border-zinc-800 bg-zinc-900 p-3 text-left transition-colors hover:border-indigo-500/40 hover:bg-zinc-800"
-                onClick={() => setName(suggestion.name)}
+                key={`${suggestion.name}-${index}`}
+                onClick={() => handleSuggestionClick(suggestion)}
+                className="flex w-full flex-col items-start gap-1 rounded-lg border border-zinc-800 bg-zinc-900 p-3 text-left transition hover:border-indigo-500/50 hover:bg-zinc-800"
               >
-                <span className="min-w-0 flex-1 truncate text-sm font-medium text-white">
+                <span className="text-sm font-medium text-white">
                   {suggestion.name}
                 </span>
 
-                <span className="max-w-[55%] text-right text-xs text-zinc-400">
+                <span className="text-xs leading-relaxed text-zinc-400">
                   {suggestion.reasoning}
                 </span>
               </button>
@@ -184,23 +187,11 @@ const AddNameModal = ({
           </div>
         )}
 
-        {/* Request Information */}
-        {tab && (
-          <div className="rounded-md border border-zinc-800 bg-zinc-950 p-3">
-            <div className="mb-1 text-xs font-medium text-zinc-500">
-              Request
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="rounded bg-zinc-800 px-2 py-1 text-xs font-bold text-indigo-400">
-                {tab.method}
-              </span>
-
-              <span className="truncate text-xs text-zinc-400">
-                {tab.url || "No URL specified"}
-              </span>
-            </div>
-          </div>
+        {/* Loading State */}
+        {isPending && (
+          <p className="text-xs text-zinc-500">
+            Generating request name suggestions...
+          </p>
         )}
       </div>
     </Modal>
