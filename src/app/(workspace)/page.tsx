@@ -1,62 +1,47 @@
 "use client";
 
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
 import { Loader2 } from "lucide-react";
-import { useWorkspaceStore } from "@/modules/layout/store";
 import PlaygroundPage from "@/modules/request/components/request-playground";
 import TabbedSidebar from "@/modules/workspace/components/sidebar";
 import { useGetWorkspace } from "@/modules/workspace/hooks/workspace";
+import { useWorkspace } from "./workspace-context";
 
 const Page = () => {
-  const { selectedWorkspace } = useWorkspaceStore();
-
-  const workspaceId = selectedWorkspace?.id;
-
-  const {
-    data: currentWorkspace,
-    isLoading,
-    isError,
-  } = useGetWorkspace(workspaceId!);
-
-  // ---------------- Loading ----------------
-  if (!workspaceId || isLoading) {
+  // Get workspace from context (passed from layout)
+  let workspace;
+  
+  try {
+    workspace = useWorkspace();
+  } catch (error) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-3">
-          <div className="relative flex items-center justify-center">
-            <div className="absolute size-10 rounded-full border border-indigo-500/20" />
-
-            <Loader2 className="size-6 animate-spin text-indigo-500" />
-          </div>
-
-          <div className="text-center">
-            <p className="text-sm font-medium text-foreground">
-              Loading workspace
-            </p>
-
-            <p className="mt-1 text-xs text-muted-foreground">
-              Preparing your API environment...
-            </p>
-          </div>
+      <div className="flex h-full w-full items-center justify-center bg-[#05070b]">
+        <div className="text-center">
+          <p className="text-sm font-medium text-white">
+            Workspace Context Error
+          </p>
+          <p className="mt-1 text-xs text-zinc-500">
+            {error instanceof Error ? error.message : 'Unknown error'}
+          </p>
         </div>
       </div>
     );
   }
 
-  // ---------------- Error ----------------
-  if (isError || !currentWorkspace) {
+  const {
+    data: currentWorkspace,
+    isLoading,
+    isError,
+  } = useGetWorkspace(workspace.id);
+
+  // Error state
+  if (isError) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-background">
+      <div className="flex h-full w-full items-center justify-center bg-[#05070b]">
         <div className="text-center">
-          <p className="text-sm font-medium text-foreground">
+          <p className="text-sm font-medium text-white">
             Workspace not found
           </p>
-
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-xs text-zinc-500">
             Please select another workspace and try again.
           </p>
         </div>
@@ -64,32 +49,25 @@ const Page = () => {
     );
   }
 
-  // ---------- WorkSpace --------
+  // Simple flex layout - NO RESIZABLE
   return (
-    <ResizablePanelGroup direction="horizontal" className="h-full w-full">
-      {/* Request Playground */}
-      <ResizablePanel defaultSize={65} minSize={40} className="min-w-0">
+    <div className="h-full w-full flex bg-[#05070b]">
+      {/* Left Side - Request Playground */}
+      <div className="flex-1 h-full overflow-auto">
         <PlaygroundPage />
-      </ResizablePanel>
+      </div>
 
-      {/* Resize Handle */}
-      <ResizableHandle
-        withHandle
-        className="bg-border/50 transition-colors hover:bg-indigo-500/50"
-      />
-
-      {/* Workspace Sidebar */}
-      <ResizablePanel
-        defaultSize={35}
-        minSize={25}
-        maxSize={40}
-        className="min-w-0"
-      >
-        <div className="h-full w-full overflow-hidden">
+      {/* Right Side - Collections Sidebar */}
+      <div className="w-96 h-full overflow-hidden bg-zinc-950/50 backdrop-blur-sm border-l border-white/5">
+        {isLoading || !currentWorkspace ? (
+          <div className="flex h-full items-center justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-cyan-500" />
+          </div>
+        ) : (
           <TabbedSidebar currentWorkspace={currentWorkspace} />
-        </div>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+        )}
+      </div>
+    </div>
   );
 };
 

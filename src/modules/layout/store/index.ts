@@ -12,7 +12,8 @@ type WorkspaceStore = {
 
 export const useWorkspaceStore = create<WorkspaceStore>((set) => ({
     selectedWorkspace: null,
-    setSelectedWorkspace: (workspace) => set(() => ({
-        selectedWorkspace: workspace
-    }))
+    setSelectedWorkspace: (workspace) => {
+        console.log('💾 Setting workspace in store:', workspace?.name, workspace?.id);
+        set({ selectedWorkspace: workspace });
+    }
 }))

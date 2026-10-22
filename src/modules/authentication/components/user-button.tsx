@@ -121,22 +121,23 @@ export default function UserButton({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          disabled={isLoading}
-          className="
-            group
-            h-auto
-            gap-2
-            rounded-xl
-            px-2
-            py-1.5
-            hover:bg-accent/70
-            focus-visible:ring-1
-            focus-visible:ring-ring
-          "
-        >
+      <DropdownMenuTrigger
+        disabled={isLoading}
+        className="
+          group
+          h-auto
+          gap-2
+          rounded-xl
+          px-2
+          py-1.5
+          hover:bg-accent/70
+          focus-visible:ring-1
+          focus-visible:ring-ring
+          cursor-pointer
+          inline-flex
+          items-center
+        "
+      >
           {/* Avatar */}
           <div className="relative">
             <Avatar
@@ -204,7 +205,6 @@ export default function UserButton({
               sm:block
             "
           />
-        </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent

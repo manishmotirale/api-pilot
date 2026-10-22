@@ -36,6 +36,17 @@ export const acceptWorkspaceInvite = async (token: string) => {
   const invite = await db.workspaceInvite.findUnique({
     where: {
       token,
+    },
+    include: {
+      workspace: true,
+      createdBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        }
+      }
     }
   })
 
@@ -45,6 +56,20 @@ export const acceptWorkspaceInvite = async (token: string) => {
 
   if (!invite.expiresAt || invite.expiresAt < new Date()) {
     throw new Error("Invite expired")
+  }
+
+  // Check if user is already a member
+  const existingMember = await db.workspaceMember.findUnique({
+    where: {
+      userId_workspaceId: {
+        userId: user.id,
+        workspaceId: invite.workspaceId,
+      }
+    }
+  })
+
+  if (existingMember) {
+    throw new Error("You are already a member of this workspace")
   }
 
   await db.workspaceMember.create({
@@ -61,7 +86,12 @@ export const acceptWorkspaceInvite = async (token: string) => {
     }
   })
 
-  return { success: true, message: "Invite accepted" }
+  return {
+    success: true,
+    message: "Invite accepted",
+    workspace: invite.workspace,
+    invitedBy: invite.createdBy,
+  }
 }
 
 export const getAllWorkspaceMembers = async (workspaceId: string) => {
@@ -70,8 +100,54 @@ export const getAllWorkspaceMembers = async (workspaceId: string) => {
       workspaceId,
     },
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          createdAt: true,
+        }
+      },
+    },
+    orderBy: {
+      createdAt: 'asc',
     }
   })
+}
+
+export const getInviteDetails = async (token: string) => {
+  const invite = await db.workspaceInvite.findUnique({
+    where: {
+      token,
+    },
+    include: {
+      workspace: {
+        select: {
+          id: true,
+          name: true,
+          description: true,
+        }
+      },
+      createdBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        }
+      }
+    }
+  })
+
+  if (!invite) {
+    throw new Error("Invite not found")
+  }
+
+  if (!invite.expiresAt || invite.expiresAt < new Date()) {
+    throw new Error("Invite expired")
+  }
+
+  return invite
 }
 

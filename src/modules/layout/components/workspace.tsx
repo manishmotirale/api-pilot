@@ -48,16 +48,9 @@ const WorkSpace = () => {
           variant="outline"
           size="sm"
           onClick={() => setIsModalOpen(true)}
-          className="
-            h-9 gap-2
-            border-indigo-500/30
-            bg-indigo-500/5
-            text-indigo-400
-            hover:bg-indigo-500/10
-            hover:text-indigo-300
-          "
+          className="group h-9 gap-2 border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 text-cyan-400 transition-all hover:border-cyan-500/50 hover:from-cyan-500/20 hover:to-blue-500/20 hover:text-cyan-300 hover:shadow-lg hover:shadow-cyan-500/20"
         >
-          <Plus className="size-4" />
+          <Plus className="size-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90" />
           Create Workspace
         </Button>
 
@@ -71,34 +64,29 @@ const WorkSpace = () => {
 
   return (
     <>
-      <Hint label="Change workspace">
-        <Select
-          value={selectedWorkspace?.id}
-          onValueChange={(id) => {
-            const workspace = workspaces.find((ws) => ws.id === id);
-
-            if (workspace) {
-              setSelectedWorkspace(workspace);
-            }
-          }}
-        >
+      <Select
+        value={selectedWorkspace?.id || ""}
+        onValueChange={(id) => {
+          const workspace = workspaces.find((ws) => ws.id === id);
+          if (workspace) {
+            setSelectedWorkspace(workspace);
+          }
+        }}
+      >
           <SelectTrigger
             className="
-              h-9 w-[210px]
+              h-9 min-w-[180px] max-w-[220px]
               border-zinc-800
               bg-zinc-900/60
               px-2.5
               shadow-sm
               transition-all
 
-              hover:border-indigo-500/40
+              hover:border-cyan-500/40
               hover:bg-zinc-900
 
               focus:ring-1
-              focus:ring-indigo-500/40
-
-              dark:border-zinc-800
-              dark:bg-zinc-900/60
+              focus:ring-cyan-500/40
             "
           >
             <div className="flex min-w-0 items-center gap-2">
@@ -108,15 +96,19 @@ const WorkSpace = () => {
                   flex size-6 shrink-0
                   items-center justify-center
                   rounded-md
-                  bg-indigo-500/10
-                  ring-1 ring-indigo-500/20
+                  bg-gradient-to-br from-cyan-500/20 to-blue-500/20
+                  ring-1 ring-cyan-400/30
+                  transition-all
+                  duration-300
                 "
               >
-                <FolderKanban className="size-3.5 text-indigo-400" />
+                <FolderKanban className="size-3.5 text-cyan-400 transition-transform duration-300 group-hover:scale-110" />
               </div>
 
-              {/* Workspace Name */}
-              <SelectValue placeholder="Select workspace" />
+              {/* Workspace Name - Display actual name */}
+              <span className="truncate text-sm font-medium text-zinc-200">
+                {selectedWorkspace?.name || "Select workspace"}
+              </span>
             </div>
           </SelectTrigger>
 
@@ -125,14 +117,15 @@ const WorkSpace = () => {
             className="
               w-[240px]
               border-zinc-800
-              bg-zinc-950
+              bg-zinc-950/95
+              backdrop-blur-xl
               p-1
             "
           >
             {/* Header */}
             <div className="px-2.5 py-2">
               <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-500">
-                Workspaces
+                Your Workspaces
               </p>
             </div>
 
@@ -148,32 +141,41 @@ const WorkSpace = () => {
                     cursor-pointer
                     rounded-md
                     py-2
-                    focus:bg-indigo-500/10
-                    focus:text-foreground
+                    transition-all
+                    hover:bg-gradient-to-r
+                    hover:from-cyan-500/10
+                    hover:to-blue-500/10
+                    focus:bg-gradient-to-r
+                    focus:from-cyan-500/10
+                    focus:to-blue-500/10
                   "
                 >
-                  <div className="flex w-full items-center gap-2">
-                    <div
-                      className={`
-                        flex size-7 shrink-0
-                        items-center justify-center
-                        rounded-md
-                        ${
-                          isSelected
-                            ? "bg-indigo-500/15 text-indigo-400"
-                            : "bg-zinc-800 text-zinc-400"
-                        }
-                      `}
-                    >
-                      <FolderKanban className="size-3.5" />
+                  <div className="flex w-full items-center justify-between gap-2">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <div
+                        className={`
+                          flex size-7 shrink-0
+                          items-center justify-center
+                          rounded-md
+                          transition-all duration-300
+                          ${
+                            isSelected
+                              ? "bg-gradient-to-br from-cyan-500/20 to-blue-500/20 text-cyan-400 ring-1 ring-cyan-400/30 scale-105"
+                              : "bg-zinc-800 text-zinc-400"
+                          }
+                        `}
+                      >
+                        <FolderKanban className={`size-3.5 transition-all ${isSelected ? 'scale-110 rotate-3' : ''}`} />
+                      </div>
+
+                      <span className="truncate text-sm font-medium">
+                        {ws.name}
+                      </span>
                     </div>
 
-                    <span className="max-w-[150px] truncate text-sm">
-                      {ws.name}
-                    </span>
-
+                    {/* Single check mark for selected workspace */}
                     {isSelected && (
-                      <Check className="ml-auto size-4 text-indigo-400" />
+                      <Check className="size-4 shrink-0 text-cyan-400 animate-in fade-in duration-200" />
                     )}
                   </div>
                 </SelectItem>
@@ -183,8 +185,8 @@ const WorkSpace = () => {
             <Separator className="my-1 bg-zinc-800" />
 
             {/* Create Workspace */}
-            <div className="flex items-center justify-between px-2 py-2">
-              <div>
+            <div className="flex items-center justify-between gap-2 px-2 py-2">
+              <div className="min-w-0 flex-1">
                 <p className="text-xs font-medium text-zinc-300">
                   Need another workspace?
                 </p>
@@ -195,19 +197,13 @@ const WorkSpace = () => {
                 size="icon"
                 variant="ghost"
                 onClick={() => setIsModalOpen(true)}
-                className="
-                  size-8
-                  text-indigo-400
-                  hover:bg-indigo-500/10
-                  hover:text-indigo-300
-                "
+                className="group size-8 shrink-0 text-cyan-400 transition-all hover:bg-gradient-to-br hover:from-cyan-500/10 hover:to-blue-500/10 hover:text-cyan-300"
               >
-                <Plus className="size-4" />
+                <Plus className="size-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90" />
               </Button>
             </div>
           </SelectContent>
         </Select>
-      </Hint>
 
       <CreateWorkspace
         isModalOpen={isModalOpen}

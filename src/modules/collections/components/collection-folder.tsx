@@ -70,7 +70,6 @@ const CollectionFolder = ({ collection }: Props) => {
     <>
       <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
         <div className="w-full">
-          // Collection Header
           <div
             className="
               group
@@ -174,23 +173,20 @@ const CollectionFolder = ({ collection }: Props) => {
 
               {/* More */}
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    type="button"
-                    title="More options"
-                    className="
-                      flex size-7
-                      items-center justify-center
-                      rounded-md
-                      text-zinc-500
-                      outline-none
-                      transition-colors
-                      hover:bg-zinc-800
-                      hover:text-zinc-200
-                    "
-                  >
-                    <EllipsisVertical className="size-3.5" />
-                  </button>
+                <DropdownMenuTrigger
+                  title="More options"
+                  className="
+                    flex size-7
+                    items-center justify-center
+                    rounded-md
+                    text-zinc-500
+                    outline-none
+                    transition-colors
+                    hover:bg-zinc-800
+                    hover:text-zinc-200
+                  "
+                >
+                  <EllipsisVertical className="size-3.5" />
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent
@@ -248,7 +244,6 @@ const CollectionFolder = ({ collection }: Props) => {
             </div>
           </div>
           
-          // Requests
           <CollapsibleContent className="w-full">
             {isPending ? (
               <div className="ml-7 flex items-center gap-2 py-2 pl-4">
@@ -357,21 +352,18 @@ const CollectionFolder = ({ collection }: Props) => {
                           "
                         >
                           <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <button
-                                type="button"
-                                onClick={(e) => e.stopPropagation()}
-                                className="
-                                  flex size-6
-                                  items-center justify-center
-                                  rounded
-                                  text-zinc-600
-                                  hover:bg-zinc-800
-                                  hover:text-zinc-300
-                                "
-                              >
-                                <EllipsisVertical className="size-3" />
-                              </button>
+                            <DropdownMenuTrigger
+                              onClick={(e) => e.stopPropagation()}
+                              className="
+                                flex size-6
+                                items-center justify-center
+                                rounded
+                                text-zinc-600
+                                hover:bg-zinc-800
+                                hover:text-zinc-300
+                              "
+                            >
+                              <EllipsisVertical className="size-3" />
                             </DropdownMenuTrigger>
 
                             <DropdownMenuContent
@@ -412,20 +404,17 @@ const CollectionFolder = ({ collection }: Props) => {
           </CollapsibleContent>
         </div>
       </Collapsible>
-      // Edit Collection
       <EditCollectionModal
         isModalOpen={isEditOpen}
         setIsModalOpen={setIsEditOpen}
         collectionId={collection.id}
         initialName={collection.name}
       />
-      // Delete Collection
       <DeleteCollectionModal
         isModalOpen={isDeleteOpen}
         setIsModalOpen={setIsDeleteOpen}
         collectionId={collection.id}
       />
-      // Add Request
       <SaveRequestToCollectionModal
         isModalOpen={isAddRequestOpen}
         setIsModalOpen={setIsAddRequestOpen}

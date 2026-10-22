@@ -21,7 +21,7 @@ interface KeyValueItem {
 }
 
 interface BodyData {
-  contentType: string;
+  contentType: "application/json" | "text/plain";
   body?: string;
 }
 

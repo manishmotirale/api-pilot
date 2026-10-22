@@ -45,11 +45,18 @@ const SaveRequestToCollectionModal = ({
 
   const workspaceId = selectedWorkspace?.id;
 
+  console.log('SaveRequestModal - workspaceId:', workspaceId);
+  console.log('SaveRequestModal - selectedWorkspace:', selectedWorkspace);
+
   const {
     data: collections,
     isLoading,
     isError,
-  } = useCollections(workspaceId!);
+  } = useCollections(workspaceId);
+
+  console.log('SaveRequestModal - collections:', collections);
+  console.log('SaveRequestModal - isLoading:', isLoading);
+  console.log('SaveRequestModal - isError:', isError);
 
   const { mutateAsync, isPending } =
     useAddRequestToCollection(selectedCollectionId);
@@ -161,7 +168,6 @@ const SaveRequestToCollectionModal = ({
       submitVariant="default"
     >
       <div className="space-y-5">
-        // Request Name
         <div className="space-y-2">
           <label
             htmlFor="request-name"
@@ -238,7 +244,6 @@ const SaveRequestToCollectionModal = ({
             </span>
           </div>
         </div>
-        // Collection Selection
         <div className="space-y-2">
           <label className="text-sm font-medium text-zinc-200">
             Save to collection
@@ -260,7 +265,6 @@ const SaveRequestToCollectionModal = ({
 
             <span className="text-zinc-300">Collections</span>
           </div>
-          // Search Input
           <div className="relative">
             <Search
               className="
@@ -299,7 +303,6 @@ const SaveRequestToCollectionModal = ({
               "
             />
           </div>
-          // Collection List
           <div
             className="
               max-h-48
@@ -319,6 +322,18 @@ const SaveRequestToCollectionModal = ({
                 <span className="mt-2 text-xs text-zinc-600">
                   Loading collections...
                 </span>
+              </div>
+            ) : !workspaceId ? (
+              <div className="py-6 text-center">
+                <Folder className="mx-auto size-5 text-zinc-700" />
+
+                <p className="mt-2 text-xs text-zinc-500">
+                  No workspace selected
+                </p>
+
+                <p className="mt-1 text-[11px] text-zinc-600">
+                  Please select a workspace first.
+                </p>
               </div>
             ) : isError ? (
               <div className="py-6 text-center">
@@ -420,7 +435,6 @@ const SaveRequestToCollectionModal = ({
             )}
           </div>
         </div>
-        // Selected Collection
         {selectedCollection && (
           <div
             className="
@@ -458,7 +472,6 @@ const SaveRequestToCollectionModal = ({
             </div>
           </div>
         )}
-        // Request Preview
         <div
           className="
             rounded-md
