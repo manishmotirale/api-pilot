@@ -23,12 +23,11 @@ import {
     alignOffset,
   }: HintProps) => {
     return (
-      <TooltipProvider>
-        <Tooltip delayDuration={100}>
-          <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipProvider delay={100}>
+        <Tooltip>
+          <TooltipTrigger>{children}</TooltipTrigger>
   
           <TooltipContent
-        
             side={side}
             align={align}
             sideOffset={sideOffset}

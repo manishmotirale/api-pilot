@@ -125,17 +125,17 @@ const TabbedSidebar = ({ currentWorkspace }: Props) => {
                 <button
                   type="button"
                   title="Help"
-                  className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-300"
+                  className="group flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 transition-all hover:bg-zinc-800 hover:text-cyan-400"
                 >
-                  <HelpCircle className="h-4 w-4" />
+                  <HelpCircle className="h-4 w-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
                 </button>
 
                 <button
                   type="button"
                   title="Open in new window"
-                  className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-300"
+                  className="group flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 transition-all hover:bg-zinc-800 hover:text-cyan-400"
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  <ExternalLink className="h-4 w-4 transition-all duration-300 group-hover:scale-110" />
                 </button>
               </div>
             </div>
@@ -161,9 +161,9 @@ const TabbedSidebar = ({ currentWorkspace }: Props) => {
                 type="button"
                 variant="ghost"
                 onClick={() => setIsModalOpen(true)}
-                className="h-8 w-full justify-start gap-2 text-zinc-400 hover:bg-zinc-900 hover:text-white"
+                className="group h-8 w-full justify-start gap-2 text-zinc-400 hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-blue-500/10 hover:text-cyan-400 transition-all"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-4 w-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90" />
 
                 <span className="text-sm font-medium">New Collection</span>
               </Button>
@@ -266,16 +266,16 @@ const TabbedSidebar = ({ currentWorkspace }: Props) => {
                 type="button"
                 onClick={() => setActiveTab(item.label)}
                 title={item.label}
-                className={`relative flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200 ${
+                className={`group relative flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200 ${
                   isActive
-                    ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/20"
+                    ? "bg-gradient-to-br from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30"
                     : "text-zinc-500 hover:bg-zinc-800 hover:text-zinc-200"
                 }`}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className={`h-4 w-4 transition-all duration-300 ${!isActive && 'group-hover:scale-110 group-hover:rotate-12'}`} />
 
                 {isActive && (
-                  <span className="absolute -left-[13px] h-5 w-0.5 rounded-full bg-indigo-400" />
+                  <span className="absolute -left-[13px] h-5 w-0.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.6)]" />
                 )}
               </button>
             );

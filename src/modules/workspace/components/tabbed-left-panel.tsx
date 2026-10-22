@@ -13,12 +13,14 @@ const TabbedLeftPanel = () => {
   const sidebarItems = [
     {
       icon: LinkIcon,
-      label: "rest",
+      label: "REST APIs",
+      key: "rest",
       link: "/",
     },
     {
       icon: Globe,
-      label: "realtime",
+      label: "Realtime",
+      key: "realtime",
       link: "/realtime",
     },
   ];
@@ -30,19 +32,19 @@ const TabbedLeftPanel = () => {
         <div className="flex flex-col gap-3">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
-            const isActive = activeTab === item.label;
+            const isActive = activeTab === item.key;
 
             return (
-              <Hint key={item.label} label={item.label} side="right">
+              <Hint key={item.key} label={item.label} side="right">
                 <Link
                   href={item.link}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200 ${
+                  className={`group flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200 ${
                     isActive
-                      ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/20"
-                      : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+                      ? "bg-gradient-to-br from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30"
+                      : "text-zinc-400 hover:bg-zinc-800 hover:text-cyan-400"
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className={`h-4 w-4 transition-all duration-300 ${!isActive && 'group-hover:scale-110 group-hover:rotate-12'}`} />
                 </Link>
               </Hint>
             );

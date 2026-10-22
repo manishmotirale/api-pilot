@@ -1,10 +1,16 @@
-import { generateObject, generateText } from "ai";
-import { google } from "@ai-sdk/google";
+import { generateObject } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { z } from "zod";
+import { env } from "./env";
 
-// Gemini 3.7 Flash
-// Current Google Gemini API free tier model.
-const model = google("gemini-3.7-flash");
+// OpenRouter configuration
+const openrouter = createOpenAI({
+  apiKey: env.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY || "",
+  baseURL: "https://openrouter.ai/api/v1",
+});
+
+// Use free Google Gemini model through OpenRouter
+const model = openrouter(env.OPENROUTER_DEFAULT_MODEL || "google/gemini-2.0-flash-exp:free");
 
 // TYPES
 export interface RequestSuggestionParams {
@@ -151,7 +157,7 @@ Return exactly 3 different suggestions.
 `;
 
     const result = await generateObject({
-      model,
+      model: model as any,
       schema: RequestNameSchema,
       prompt,
       temperature: 0.7,
@@ -230,7 +236,7 @@ JSON.parse(jsonBody)
   `;
 
     const result = await generateObject({
-      model,
+      model: model as any,
       schema: JsonBodySchema,
       prompt: systemPrompt,
       temperature: 0.3,
@@ -332,7 +338,7 @@ JSON.parse(jsonBody)
   `;
 
     const result = await generateObject({
-      model,
+      model: model as any,
       schema: JsonBodySchema,
       prompt: enhancedPrompt,
       temperature: 0.4,
@@ -422,7 +428,7 @@ Do not restrict the response to predefined fields.
 `;
 
     const result = await generateObject({
-      model,
+      model: model as any,
       schema: StructuredJsonBodySchema,
       prompt: systemPrompt,
       temperature: 0.3,

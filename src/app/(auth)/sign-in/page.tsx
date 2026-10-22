@@ -52,7 +52,7 @@ export default function SignInPage() {
       <header className="relative z-20 flex h-20 items-center justify-between px-6 lg:px-10">
         <Link
           href="/"
-          className="flex items-center transition-opacity hover:opacity-80"
+          className="flex items-center gap-2 transition-opacity hover:opacity-80"
         >
           <Image
             src="/ApiPilot.gif"
@@ -62,6 +62,11 @@ export default function SignInPage() {
             priority
             className="h-12 w-12 object-contain"
           />
+          <div className="hidden sm:block">
+            <p className="text-lg font-bold leading-none tracking-tight text-white">
+              API<span className="text-blue-400">Pilot</span>
+            </p>
+          </div>
         </Link>
 
         <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-slate-400 sm:flex">

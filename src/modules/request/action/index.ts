@@ -15,50 +15,68 @@ export type Request = {
 
 
 export const addRequestToCollection = async (collectionId: string, value: Request) => {
-    const request = await db.request.create({
-        data: {
-            collectionId,
-            name: value.name,
-            method: value.method,
-            url: value.url,
-            body: value.body,
-            headers: value.headers,
-            parameters: value.parameters,
-        }
-    });
+    try {
+        const request = await db.request.create({
+            data: {
+                collectionId,
+                name: value.name,
+                method: value.method,
+                url: value.url,
+                body: value.body,
+                headers: value.headers,
+                parameters: value.parameters,
+            }
+        });
 
-    return request;
+        return request;
+    } catch (error) {
+        console.error('Error adding request to collection:', error);
+        throw new Error(`Failed to add request: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
 }
 
 
 
 export const saveRequest = async (id: string, value: Request) => {
+    try {
+        console.log('Saving request:', value, id);
+        
+        const request = await db.request.update({
+            where: {
+                id: id
+            },
+            data: {
+                name: value.name,
+                method: value.method,
+                url: value.url,
+                body: value.body,
+                headers: value.headers,
+                parameters: value.parameters,
+            },
+        });
 
-    console.log(value, id);
-    const request = await db.request.update({
-        where: {
-            id: id
-        },
-        data: {
-            name: value.name,
-            method: value.method,
-            url: value.url,
-            body: value.body,
-            headers: value.headers,
-            parameters: value.parameters,
-        },
-    });
-
-    return request;
+        return request;
+    } catch (error) {
+        console.error('Error saving request:', error);
+        throw new Error(`Failed to save request: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
 }
 
 export const getAllRequestFromCollection = async (collectionId: string) => {
-    const requests = await db.request.findMany({
-        where: {
-            collectionId,
-        },
-    });
-    return requests;
+    try {
+        const requests = await db.request.findMany({
+            where: {
+                collectionId,
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+        return requests;
+    } catch (error) {
+        console.error('Error fetching requests:', error);
+        throw new Error(`Failed to fetch requests: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
 }
 
 export async function sendRequest(req: {
@@ -68,6 +86,18 @@ export async function sendRequest(req: {
     params?: Record<string, string>;
     body?: any;
 }) {
+    // Validate URL
+    try {
+        new URL(req.url);
+    } catch {
+        return {
+            error: 'Invalid URL format',
+            status: 0,
+            statusText: 'Invalid URL',
+            duration: 0,
+        };
+    }
+
     const config: AxiosRequestConfig = {
         method: req.method,
         url: req.url,
@@ -75,6 +105,7 @@ export async function sendRequest(req: {
         params: req.params,
         data: req.body,
         validateStatus: () => true, // ✅ capture errors too
+        timeout: 30000, // 30 second timeout
     };
 
     const start = performance.now();
@@ -87,7 +118,12 @@ export async function sendRequest(req: {
             res.headers["content-length"] ||
             new TextEncoder().encode(JSON.stringify(res.data)).length;
 
-        console.log(res.data);
+        console.log('Request completed:', {
+            url: req.url,
+            method: req.method,
+            status: res.status,
+            duration: Math.round(duration)
+        });
 
         return {
             status: res.status,
@@ -99,9 +135,13 @@ export async function sendRequest(req: {
         };
     } catch (error: any) {
         const end = performance.now();
+        console.error('Request failed:', error.message);
+        
         return {
-            error: error.message,
+            error: error.code === 'ECONNABORTED' ? 'Request timeout' : error.message,
             duration: Math.round(end - start),
+            status: 0,
+            statusText: error.code || 'Error',
         };
     }
 }
@@ -204,50 +244,78 @@ export async function runDirect(requestData: {
 
         const result = await sendRequest(requestConfig);
 
-        const requestRun = await db.requestRun.create({
-            data: {
-                requestId: requestData.id,
-                status: result.status || 0,
-                statusText: result.statusText || (result.error ? 'Error' : null),
-                headers: result.headers || "",
-                body: result.data ? (typeof result.data === 'string' ? result.data : JSON.stringify(result.data)) : null,
-                durationMs: result.duration || 0
-            }
-        });
-
-        // Update request with latest response if successful
-        if (result.data && !result.error) {
-            await db.request.update({
-                where: { id: requestData.id },
+        // Only save to database if this is not a temporary request
+        const isTemporaryRequest = requestData.id.startsWith("temp-");
+        
+        if (!isTemporaryRequest) {
+            const requestRun = await db.requestRun.create({
                 data: {
-                    response: result.data,
-                    updatedAt: new Date()
+                    requestId: requestData.id,
+                    status: result.status || 0,
+                    statusText: result.statusText || (result.error ? 'Error' : null),
+                    headers: result.headers || "",
+                    body: result.data ? (typeof result.data === 'string' ? result.data : JSON.stringify(result.data)) : null,
+                    durationMs: result.duration || 0
                 }
             });
+
+            // Update request with latest response if successful
+            if (result.data && !result.error) {
+                await db.request.update({
+                    where: { id: requestData.id },
+                    data: {
+                        response: result.data,
+                        updatedAt: new Date()
+                    }
+                });
+            }
+
+            return {
+                success: true,
+                requestRun,
+                result
+            };
         }
 
+        // For temporary requests, just return the result without saving
         return {
             success: true,
-            requestRun,
+            requestRun: null,
             result
         };
 
     } catch (error: any) {
-        const failedRun = await db.requestRun.create({
-            data: {
-                requestId: requestData.id,
-                status: 0,
-                statusText: 'Failed',
-                headers: "",
-                body: error.message,
-                durationMs: 0
-            }
-        });
+        const isTemporaryRequest = requestData.id.startsWith("temp-");
+        
+        if (!isTemporaryRequest) {
+            const failedRun = await db.requestRun.create({
+                data: {
+                    requestId: requestData.id,
+                    status: 0,
+                    statusText: 'Failed',
+                    headers: "",
+                    body: error.message,
+                    durationMs: 0
+                }
+            });
+
+            return {
+                success: false,
+                error: error.message,
+                requestRun: failedRun
+            };
+        }
 
         return {
             success: false,
             error: error.message,
-            requestRun: failedRun
+            requestRun: null,
+            result: {
+                error: error.message,
+                status: 0,
+                statusText: 'Error',
+                duration: 0,
+            }
         };
     }
 }

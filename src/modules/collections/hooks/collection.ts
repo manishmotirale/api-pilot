@@ -1,10 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createCollection, deleteCollection, editCollection, getCollections } from "../actions";
 
-export function useCollections(workspaceId: string) {
+export function useCollections(workspaceId: string | undefined) {
     return useQuery({
         queryKey: ['collections', workspaceId],
-        queryFn: async () => getCollections(workspaceId),
+        queryFn: async () => {
+            if (!workspaceId) throw new Error('No workspace selected');
+            return getCollections(workspaceId);
+        },
+        enabled: !!workspaceId, // Only run query if workspaceId exists
     });
 }
 

@@ -211,7 +211,6 @@ const BodyEditor: React.FC<BodyEditorProps> = ({
     <div className={cn("w-full", className)}>
       <Form {...form}>
         <div className="overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900">
-          // Header
           <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900 px-4 py-3">
             <div className="flex items-center gap-4">
               <h3 className="text-sm font-medium text-zinc-200">
@@ -324,7 +323,6 @@ const BodyEditor: React.FC<BodyEditorProps> = ({
               </Button>
             </div>
           </div>
-          // Monaco Editor
           <div className="relative h-80">
             <FormField
               control={form.control}

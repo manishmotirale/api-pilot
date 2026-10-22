@@ -110,19 +110,24 @@ const ResponseViewer = ({ responseData }: Props) => {
   let formattedJsonString = "";
 
   try {
-    const rawBody = responseData?.requestRun?.body;
+    // Try to get the body from result.data first, then fall back to requestRun.body
+    const rawBody = responseData?.result?.data ?? responseData?.requestRun?.body;
 
     if (typeof rawBody === "string") {
       responseBody = rawBody.length ? JSON.parse(rawBody) : rawBody;
+    } else if (rawBody) {
+      responseBody = rawBody;
     } else {
-      responseBody = rawBody ?? {};
+      responseBody = {};
     }
 
     formattedJsonString = JSON.stringify(responseBody, null, 2);
   } catch (error) {
     console.error("Response is not valid JSON:", error);
 
-    responseBody = responseData?.requestRun?.body ?? {};
+    const rawBody = responseData?.result?.data ?? responseData?.requestRun?.body ?? {};
+
+    responseBody = rawBody;
 
     formattedJsonString =
       typeof responseBody === "string"
@@ -131,24 +136,32 @@ const ResponseViewer = ({ responseData }: Props) => {
   }
 
   // Response Information
-  const status = responseData.result?.status ?? responseData.requestRun?.status;
+  const status = responseData?.result?.status ?? responseData?.requestRun?.status;
 
   const statusText =
-    responseData.result?.statusText ?? responseData.requestRun?.statusText;
+    responseData?.result?.statusText ?? responseData?.requestRun?.statusText;
 
   const duration =
-    responseData.result?.duration ?? responseData.requestRun?.durationMs;
+    responseData?.result?.duration ?? responseData?.requestRun?.durationMs;
 
-  const size = responseData.result?.size;
+  const size = responseData?.result?.size;
 
-  const rawBody = responseData.requestRun?.body;
+  const rawBody = responseData?.result?.data ?? responseData?.requestRun?.body;
 
-  const responseHeaders = responseData.requestRun?.headers ?? {};
+  const responseHeaders = responseData?.result?.headers ?? responseData?.requestRun?.headers ?? {};
+
+  // Debug log to see what we're receiving
+  console.log("Response Data:", {
+    fullData: responseData,
+    result: responseData?.result,
+    requestRun: responseData?.requestRun,
+    rawBody,
+    formattedJson: formattedJsonString,
+  });
 
   return (
     <div className="w-full bg-zinc-950 p-6 text-white">
       <div className="mx-auto w-full">
-        // Response Status Header
         <Card className="mb-6 border-zinc-800 bg-zinc-900">
           <CardHeader className="pb-3">
             <div className="flex flex-wrap items-center justify-between gap-4">
@@ -426,7 +439,6 @@ const ResponseViewer = ({ responseData }: Props) => {
                   </div>
                 </ScrollArea>
               </TabsContent>
-              // TEST RESULTS TAB
               <TabsContent value="test" className="mt-0">
                 <div className="p-6">
                   <div className="mb-4 flex items-center gap-2">
